@@ -14,12 +14,13 @@
 <main id="home" class="home">
 <section class="hero"><h2>Aprender a programar campañas sin arriesgar dinero real.</h2><p>Practique la lógica de Campaña → Conjunto de anuncios → Anuncios, pruebe creatividades y obtenga un diagnóstico educativo. Todo funciona localmente en su navegador.</p></section>
 <section class="mode-grid">
-<article class="mode-card"><div class="icon">🧭</div><h3>Práctica guiada</h3><p>Explicaciones, advertencias y correcciones en tiempo real. Puede repetirla sin límite.</p><button class="btn btn-primary" onclick="startMode('guided')">Comenzar</button></article>
+<article class="mode-card"><div class="icon">🧭</div><h3>Práctica con sugerencias</h3><p>Incluye una propuesta modelo ya sugerida en los campos. Puede modificarla, comparar decisiones y aprender con advertencias en tiempo real.</p><button class="btn btn-primary" onclick="startMode('guided')">Practicar con guía</button></article>
+<article class="mode-card"><div class="icon">📝</div><h3>Práctica libre</h3><p>Configure una campaña desde cero sin respuestas sugeridas. Mantiene las ayudas y diagnósticos del simulador, pero las decisiones son totalmente suyas.</p><button class="btn btn-primary" onclick="startMode('free')">Practicar libremente</button></article>
 <article class="mode-card"><div class="icon">🍔</div><h3>Caso McDonald's</h3><p>Resuelva un brief predefinido y compare sus decisiones con criterios estratégicos.</p><button class="btn btn-primary" onclick="startMode('mcd')">Resolver caso</button></article>
 <article class="mode-card"><div class="icon">🏔️</div><h3>Caso Patagonia</h3><p>Segundo escenario para transferir lo aprendido a otra categoría y audiencia.</p><button class="btn btn-primary" onclick="startMode('patagonia')">Resolver caso</button></article>
 <article class="mode-card"><div class="icon">🎓</div><h3>Modo evaluación</h3><p>Genera una evaluación automática, conserva localmente el historial del navegador y prepara un informe listo para guardar como PDF.</p><button class="btn btn-primary" onclick="startMode('evaluation')">Iniciar evaluación</button></article>
 </section>
-<div class="notice info"><b>Versión local:</b> no envía datos a internet. La campaña y los archivos creativos se procesan únicamente en este dispositivo. Para evitar pérdidas, complete la evaluación y genere el informe en la misma sesión.</div>
+<div class="notice info"><b>Versión web:</b> la configuración y los archivos creativos se procesan en su navegador. Para evitar pérdidas, complete la evaluación y genere el informe en la misma sesión.</div>
 </main>
 
 <main id="workspace" class="workspace">
@@ -78,11 +79,71 @@
 <aside class="preview"><h3>Salud de campaña</h3><div class="health" id="health"></div><div class="preview-tabs" id="previewTabs"></div><div class="phone"><div class="phone-head"></div><div class="ad"><div class="ad-brand" id="previewBrand">Tu marca</div><div class="ad-copy" id="previewCopy">Tu texto principal aparecerá aquí.</div><div class="creative" id="creativePreview">Vista previa del creativo</div><button class="btn cta" id="previewCTA">Más información</button></div></div><div class="placement-hint" id="previewPlacement">Vista previa: Instagram Feed</div></aside>
 </main>
 
-
 <div id="reportFallback" class="report-fallback"><div class="report-fallback-bar"><button class="btn btn-ghost" onclick="closeReportFallback()">Cerrar</button><button class="btn btn-primary" onclick="printFallbackReport()">Imprimir / Guardar PDF</button></div><iframe id="reportFrame" title="Informe de evaluación"></iframe></div>
 </div>
 
 <script src="app1.js"></script>
 <script src="app2.js"></script>
+<script>
+(function(){
+  const baseModeLabel = modeLabel;
+  modeLabel = function(m){
+    if(m==='guided') return 'Práctica con sugerencias';
+    if(m==='free') return 'Práctica libre';
+    return baseModeLabel(m);
+  };
+
+  const baseRenderBrief = renderBrief;
+  renderBrief = function(){
+    if(state.mode==='guided'){
+      document.getElementById('briefBox').innerHTML='<div class="notice ok"><b>Práctica con sugerencias:</b> encontrará una propuesta modelo ya colocada en los campos. Las respuestas son ejemplos editables, no una única solución correcta. Revise cada decisión y modifíquela para observar cómo cambia el diagnóstico.</div>';
+      return;
+    }
+    if(state.mode==='free'){
+      document.getElementById('briefBox').innerHTML='<div class="notice info"><b>Práctica libre:</b> configure la campaña desde cero. El simulador mantendrá advertencias, estimaciones y diagnóstico, pero no sugerirá respuestas.</div>';
+      return;
+    }
+    baseRenderBrief();
+  };
+
+  const baseStartMode = startMode;
+  startMode = function(mode){
+    baseStartMode(mode);
+    if(mode!=='guided') return;
+
+    state.objective='traffic';
+    document.getElementById('brandName').value='Café Ruta 503';
+    document.getElementById('productName').value='Promoción de bebidas frías y café artesanal';
+    document.getElementById('campaignName').value='Descubre tu pausa Ruta 503';
+    document.getElementById('campaignGoalText').value='Aumentar las visitas al sitio y generar interés en una promoción dirigida a jóvenes adultos de San Miguel.';
+    document.getElementById('location').value='San Miguel, El Salvador';
+    document.getElementById('gender').value='all';
+    document.getElementById('ageMin').value='18';
+    document.getElementById('ageMax').value='34';
+    document.getElementById('interests').value='café, cafeterías, bebidas frías, gastronomía, estudiantes universitarios';
+    document.getElementById('budgetType').value='daily';
+    document.getElementById('budget').value='8';
+    document.getElementById('budgetReason').value='Se propone un presupuesto diario moderado durante siete días para probar la respuesta del público sin sobredimensionar la inversión inicial.';
+    document.getElementById('placementMode').value='auto';
+
+    if(state.ads[0]){
+      state.ads[0].type='image';
+      state.ads[0].copy='¿Necesita una pausa? Descubra nuestra promoción de bebidas frías y café artesanal para acompañar su día.';
+      state.ads[0].title='Su próxima pausa está aquí';
+      state.ads[0].desc='Conozca la promoción disponible por tiempo limitado.';
+      state.ads[0].cta='Más información';
+      state.ads[0].url='https://ejemplo.com/promocion';
+    }
+
+    renderObjectives();
+    renderAds();
+    updateAudience();
+    updateBudget();
+    updatePlacementNotice();
+    updatePreview();
+    updateHealth();
+  };
+})();
+</script>
 </body>
 </html>
