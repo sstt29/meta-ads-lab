@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Meta Ads Lab — Simulador educativo</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+<div class="topbar"><div class="brand"><div class="logo">MAL</div><div><h1>Meta Ads Lab</h1><p>Simulador educativo de campañas digitales</p></div></div><div class="mode-badge" id="modeBadge">Inicio</div></div>
+
+<main id="home" class="home">
+<section class="hero"><h2>Aprender a programar campañas sin arriesgar dinero real.</h2><p>Practique la lógica de Campaña → Conjunto de anuncios → Anuncios, pruebe creatividades y obtenga un diagnóstico educativo. Todo funciona localmente en su navegador.</p></section>
+<section class="mode-grid">
+<article class="mode-card"><div class="icon">🧭</div><h3>Práctica guiada</h3><p>Explicaciones, advertencias y correcciones en tiempo real. Puede repetirla sin límite.</p><button class="btn btn-primary" onclick="startMode('guided')">Comenzar</button></article>
+<article class="mode-card"><div class="icon">🍔</div><h3>Caso McDonald's</h3><p>Resuelva un brief predefinido y compare sus decisiones con criterios estratégicos.</p><button class="btn btn-primary" onclick="startMode('mcd')">Resolver caso</button></article>
+<article class="mode-card"><div class="icon">🏔️</div><h3>Caso Patagonia</h3><p>Segundo escenario para transferir lo aprendido a otra categoría y audiencia.</p><button class="btn btn-primary" onclick="startMode('patagonia')">Resolver caso</button></article>
+<article class="mode-card"><div class="icon">🎓</div><h3>Modo evaluación</h3><p>Genera una evaluación automática, conserva localmente el historial del navegador y prepara un informe listo para guardar como PDF.</p><button class="btn btn-primary" onclick="startMode('evaluation')">Iniciar evaluación</button></article>
+</section>
+<div class="notice info"><b>Versión local:</b> no envía datos a internet. La campaña y los archivos creativos se procesan únicamente en este dispositivo. Para evitar pérdidas, complete la evaluación y genere el informe en la misma sesión.</div>
+</main>
+
+<main id="workspace" class="workspace">
+<aside class="sidebar" id="sidebar"></aside>
+<section class="content">
+<div id="briefBox"></div>
+<div class="section active" data-step="0">
+<h2>1. Datos de campaña</h2><p class="sub">Defina qué quiere conseguir y qué está promocionando.</p>
+<div id="evaluationIdentity" class="hidden"><div class="notice warn"><b>Modo evaluación:</b> al finalizar, el navegador intentará guardar un registro local y generará un folio de control. El funcionamiento del informe no depende de que ese almacenamiento esté disponible.</div><div class="grid2"><div class="field"><label>Nombre completo *</label><input id="studentName" placeholder="Nombre del estudiante"></div><div class="field"><label>Carné / código *</label><input id="studentId" placeholder="Código de estudiante"></div></div></div>
+<div class="grid2"><div class="field"><label>Marca *</label><input id="brandName" placeholder="Ej. McDonald's"></div><div class="field"><label>Producto o servicio *</label><input id="productName" placeholder="Ej. Nuevo combo"></div></div>
+<div class="field"><label>Nombre de campaña *</label><input id="campaignName" placeholder="Ej. Lanzamiento Combo X"></div>
+<div class="field"><label>¿Qué busca conseguir? *</label><textarea id="campaignGoalText" placeholder="Describa brevemente el propósito de la campaña"></textarea></div>
+<div class="field"><label>Objetivo publicitario</label><div class="option-grid" id="objectiveGrid"></div></div>
+<div id="objectiveHint"></div>
+<div class="footer-actions"><button class="btn btn-ghost" onclick="goHome()">Salir</button><button class="btn btn-primary" onclick="nextStep()">Continuar</button></div>
+</div>
+
+<div class="section" data-step="1">
+<h2>2. Audiencia</h2><p class="sub">Defina a quién quiere mostrar los anuncios.</p>
+<div class="grid2"><div class="field"><label>Ubicación *</label><input id="location" placeholder="Ej. San Miguel, El Salvador"></div><div class="field"><label>Género</label><select id="gender"><option value="all">Todos</option><option value="women">Mujeres</option><option value="men">Hombres</option></select></div></div>
+<div class="grid2"><div class="field"><label>Edad mínima</label><input id="ageMin" type="number" min="13" max="65" value="18"></div><div class="field"><label>Edad máxima</label><input id="ageMax" type="number" min="13" max="65" value="35"></div></div>
+<div class="field"><label>Intereses / señales de audiencia *</label><input id="interests" placeholder="Ej. comida rápida, restaurantes, delivery"><small>Separe varios intereses con comas.</small></div>
+<div id="audienceNotice" class="notice info">Complete la segmentación para estimar el tamaño de audiencia.</div>
+<div class="footer-actions"><button class="btn btn-ghost" onclick="prevStep()">Atrás</button><button class="btn btn-primary" onclick="nextStep()">Continuar</button></div>
+</div>
+
+<div class="section" data-step="2">
+<h2>3. Presupuesto y programación</h2><p class="sub">Controle cuánto podría invertirse y durante cuánto tiempo.</p>
+<div class="grid2"><div class="field"><label>Tipo de presupuesto</label><select id="budgetType"><option value="daily">Presupuesto diario</option><option value="total">Presupuesto total</option></select></div><div class="field"><label>Monto ($)</label><input id="budget" type="number" min="1" step="0.01" value="10"></div></div>
+<div class="grid2"><div class="field"><label>Fecha de inicio</label><input id="startDate" type="date"></div><div class="field"><label>Fecha de finalización</label><input id="endDate" type="date"></div></div>
+<div class="field"><label>Justificación del presupuesto *</label><textarea id="budgetReason" placeholder="Explique por qué considera adecuada esta inversión para el objetivo, la audiencia y la duración"></textarea></div>
+<div id="budgetNotice" class="notice info">La inversión total aparecerá al definir las fechas.</div>
+<div class="footer-actions"><button class="btn btn-ghost" onclick="prevStep()">Atrás</button><button class="btn btn-primary" onclick="nextStep()">Continuar</button></div>
+</div>
+
+<div class="section" data-step="3">
+<h2>4. Ubicaciones</h2><p class="sub">Seleccione dónde podrían mostrarse sus anuncios.</p>
+<div class="field"><label>Estrategia de ubicaciones</label><select id="placementMode"><option value="auto">Automáticas / Advantage+</option><option value="manual">Manuales</option></select></div>
+<div class="checks" id="placements"></div><div id="placementNotice" class="notice info"></div>
+<div class="footer-actions"><button class="btn btn-ghost" onclick="prevStep()">Atrás</button><button class="btn btn-primary" onclick="nextStep()">Continuar</button></div>
+</div>
+
+<div class="section" data-step="4">
+<h2>5. Anuncios y creatividades</h2><p class="sub">Una campaña puede contener varios anuncios y combinar imagen, video y carrusel.</p>
+<div id="adsList"></div><button class="btn btn-secondary" onclick="addAd()">+ Agregar anuncio</button>
+<div class="notice info"><b>Potencial creativo estimado:</b> la evaluación combina calidad de la configuración, claridad del copy, coherencia del CTA, diversidad de formatos y adecuación técnica básica del archivo. No sustituye la evaluación docente del contenido creativo.</div>
+<div class="footer-actions"><button class="btn btn-ghost" onclick="prevStep()">Atrás</button><button class="btn btn-primary" onclick="nextStep()">Simular resultados</button></div>
+</div>
+
+<div class="section" data-step="5">
+<h2>6. Resultados y evaluación</h2><p class="sub">Estimación educativa basada en sus decisiones. No representa resultados garantizados de Meta.</p>
+<div id="results"></div>
+<div class="footer-actions"><button class="btn btn-ghost" onclick="prevStep()">Revisar campaña</button><button class="btn btn-secondary" onclick="savePractice()">Guardar campaña local</button><button class="btn btn-primary" onclick="downloadReport()">Generar informe / PDF</button></div>
+</div>
+</section>
+<aside class="preview"><h3>Salud de campaña</h3><div class="health" id="health"></div><div class="preview-tabs" id="previewTabs"></div><div class="phone"><div class="phone-head"></div><div class="ad"><div class="ad-brand" id="previewBrand">Tu marca</div><div class="ad-copy" id="previewCopy">Tu texto principal aparecerá aquí.</div><div class="creative" id="creativePreview">Vista previa del creativo</div><button class="btn cta" id="previewCTA">Más información</button></div></div><div class="placement-hint" id="previewPlacement">Vista previa: Instagram Feed</div></aside>
+</main>
+
+
+<div id="reportFallback" class="report-fallback"><div class="report-fallback-bar"><button class="btn btn-ghost" onclick="closeReportFallback()">Cerrar</button><button class="btn btn-primary" onclick="printFallbackReport()">Imprimir / Guardar PDF</button></div><iframe id="reportFrame" title="Informe de evaluación"></iframe></div>
+</div>
+
+<script src="app1.js"></script>
+<script src="app2.js"></script>
+</body>
+</html>
